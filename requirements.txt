@@ -1,0 +1,7 @@
+streamlit
+geoclip
+torch
+torchvision
+pillow
+pandas
+transformers==4.44.2
