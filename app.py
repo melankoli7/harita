@@ -1,24 +1,22 @@
 import streamlit as st
 from PIL import Image
-import google.generativeai as genai
+from google import genai
 
 st.set_page_config(page_title="KonumBul", page_icon="🌍", layout="centered")
 
 # ---------- API ANAHTARI ----------
-GOOGLE_API_KEY = "AQ.Ab8RN6K5pBWgbdkuu9yGD1QY6807aPWKBf9pkFAiHpxu-gPjkg"
-
 try:
-    genai.configure(api_key=GOOGLE_API_KEY)
-except Exception as e:
-    st.error(f"⚠️ API anahtarı ayarlanamadı: {e}")
+    GOOGLE_API_KEY = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    st.error("⚠️ GEMINI_API_KEY bulunamadı. Streamlit Secrets içine ekleyin.")
     st.stop()
+
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # ---------- ANALİZ FONKSİYONU ----------
 def konumu_analiz_et(img):
     with st.spinner("🔍 Konum analiz ediliyor..."):
         try:
-            model = genai.GenerativeModel("gemini-3.1-flash-lite")
-
             prompt = """
 Bu fotoğrafın nerede çekildiğini tahmin et.
 
@@ -41,7 +39,10 @@ Lütfen Türkçe cevap ver ve şunları belirt:
 Kesin emin değilsen bunu açıkça söyle.
 """
 
-            response = model.generate_content([prompt, img])
+            response = client.models.generate_content(
+                model="gemini-3.1-flash-lite",
+                contents=[prompt, img]
+            )
 
             st.success("✅ Analiz tamamlandı!")
             st.markdown(response.text)
@@ -72,7 +73,7 @@ try:
     from streamlit_paste_button import paste_image_button as pbutton
     paste_result = pbutton("📋 Görseli Yapıştır")
 except Exception:
-    st.info("Yapıştırma özelliği için şu paketi kur: streamlit-paste-button")
+    st.info("Yapıştırma özelliği için requirements.txt içine şunu ekle: streamlit-paste-button")
 
 st.markdown("---")
 
