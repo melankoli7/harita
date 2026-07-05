@@ -1,8 +1,12 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
+
 streamlit
+streamlit-paste-button
+google-genai
 geoclip
 torch
 torchvision
 pillow
 pandas
 transformers==4.48.0
+python-dotenv
